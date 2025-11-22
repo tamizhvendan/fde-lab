@@ -41,11 +41,7 @@ async def api_company_job_board(slug):
   
 app.mount("/assets", StaticFiles(directory="frontend/build/client/assets"))
 
-@app.get("/")
-async def root():
+@app.get("/{full_path:path}")
+async def catch_all(full_path: str):
   indexFilePath = os.path.join("frontend", "build", "client", "index.html")
   return FileResponse(path=indexFilePath, media_type="text/html")
-
-@app.get("/{full_path:path}")
-async def catch_all_redirect(full_path: str):
-   return RedirectResponse(url="/")
