@@ -13,6 +13,10 @@ export default function JobBoards({loaderData}) {
         (jobBoard) => 
           <p key={jobBoard.id}>
             <Link to={`/job-boards/${jobBoard.id}/job-posts`}>{jobBoard.slug}</Link>
+            {jobBoard.logo_url
+              ? <img src={jobBoard.logo_url}></img>
+              : <></>
+            }
           </p>
       )}
     </div>

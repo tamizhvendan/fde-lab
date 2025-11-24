@@ -28,37 +28,34 @@ async def api_job_boards():
        jobBoards = session.query(JobBoard).all()
        return jobBoards
     
-# @app.post("/api/job-boards")
-# async def api_create_new_job_board(request: Request):
-#    body = await request.body()
-#    raw_text = body.decode()
-#    print(request.headers.get('content-type'))
-#    print(raw_text)
-#    return {}
+
 
 # from typing import Annotated
 # @app.post("/api/job-boards")
 # async def api_create_new_job_board(slug: Annotated[str, Form()]):
 #    return {"slug": slug}
 
+
+
 class JobBoardForm(BaseModel):
    slug : str = Field(..., min_length=3, max_length=20)
    logo: UploadFile = File(...)
 
-   @field_validator('slug')
-   @classmethod
-   def to_lowercase(cls, v):
-     return v.lower()
-
 # @app.post("/api/job-boards")
 # async def api_create_new_job_board(job_board_form: Annotated[JobBoardForm, Form()]):
-#    return {"slug": job_board_form.slug}
+#    return {"slug": job_board_form.slug, \
+#            "file": job_board_form.logo.filename}
 
 @app.post("/api/job-boards")
 async def api_create_new_job_board(job_board_form: Annotated[JobBoardForm, Form()]):
    logo_contents = await job_board_form.logo.read()
    file_url = upload_file("company-logos", job_board_form.logo.filename, logo_contents, job_board_form.logo.content_type)
-   return {"slug": job_board_form.slug, "file_url" : file_url}
+   with get_db_session() as session:
+      new_job_board = JobBoard(slug=job_board_form.slug, logo_url=file_url)
+      session.add(new_job_board)
+      session.commit()
+      session.refresh(new_job_board)
+      return new_job_board
 
 if not settings.PRODUCTION:
    app.mount("/uploads", StaticFiles(directory="uploads"))
