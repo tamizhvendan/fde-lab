@@ -187,7 +187,10 @@ async def api_create_new_job_application(job_application_form: Annotated[JobAppl
                               new_job_application.email, 
                               "Acknowledgement", 
                               "We have received your job application")
-      background_tasks.add_task(evaluate_resume, resume_content, jobPost.description, new_job_application.id)
+      
+      background_tasks.add_task(evaluate_resume, resume_content, 
+                                jobPost.description, new_job_application.id)
+      
       return new_job_application
   
 app.mount("/assets", StaticFiles(directory="frontend/build/client/assets"))
