@@ -1,12 +1,13 @@
 import os
 from typing import Annotated, Optional
-from fastapi import Request, Response, status, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import BackgroundTasks, Request, Response, status, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import text
 from auth import AdminAuthzMiddleware, AdminSessionMiddleware, authenticate_admin, delete_admin_session
 from db import get_db_session
+from emailer import send_email
 from file_storage import upload_file
 from models import JobApplication, JobBoard, JobPost
 from config import settings
@@ -160,7 +161,7 @@ class JobApplicationForm(BaseModel):
    resume: UploadFile = File(...)
 
 @app.post("/api/job-applications")
-async def api_create_new_job_application(job_application_form: Annotated[JobApplicationForm, Form()]):
+async def api_create_new_job_application(job_application_form: Annotated[JobApplicationForm, Form()], background_tasks: BackgroundTasks):
    with get_db_session() as session:
       jobPost = session.get(JobPost, job_application_form.job_post_id)
       if not jobPost or not jobPost.is_open:
@@ -177,6 +178,7 @@ async def api_create_new_job_application(job_application_form: Annotated[JobAppl
       session.add(new_job_application)
       session.commit()
       session.refresh(new_job_application)
+      background_tasks.add_task(send_email, new_job_application.email, "Acknowledgement", "We have received your job application")
       return new_job_application
   
 app.mount("/assets", StaticFiles(directory="frontend/build/client/assets"))

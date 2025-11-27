@@ -9,13 +9,13 @@ export async function clientLoader({params}) {
 
 export default function JobPosts({loaderData}) {
   return (
-    <div>
+    <div className="space-y-8">
       {loaderData.jobPosts.map(
         (jobPost) => 
           <div>
             <div className="flex items-center justify-between">
               <h2 key={jobPost.id} className="text-3xl font-bold">{jobPost.title}</h2>
-              <Button>
+              <Button variant="outline">
                 <Link to={`/job-posts/${jobPost.id}/application`}>Apply</Link>
               </Button>
             </div>

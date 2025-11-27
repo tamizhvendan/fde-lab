@@ -12,3 +12,5 @@ supabase==2.24.0 # File Storage
 
 testcontainers[postgres]==4.13.3 # PyTest Dependencies
 pytest==9.0.1 # Testing Tool
+
+httpx==0.28.1 # HTTP Client
