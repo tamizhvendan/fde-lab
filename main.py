@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from fastapi import Request, Response, status, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import text
 from auth import AdminAuthzMiddleware, AdminSessionMiddleware, authenticate_admin
 from db import get_db_session
@@ -177,10 +177,19 @@ async def admin_login(response: Response, admin_login_form: Annotated[AdminLogin
    auth_response = authenticate_admin(admin_login_form.username, admin_login_form.password)
    if auth_response is not None:
       secure = settings.PRODUCTION
+      
       response.set_cookie(key="admin_session", 
                           value=auth_response, 
                           httponly=True, secure=secure, 
                           samesite="Lax")
-      return {"is_admin": True}
+      return {}
    else:
       raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+   
+@app.post("/api/admin-logout")
+async def admin_login(response: Response):
+   secure = settings.PRODUCTION
+   response.delete_cookie(key="admin_session", 
+                        httponly=True, secure=secure, 
+                        samesite="Lax")
+   return {}

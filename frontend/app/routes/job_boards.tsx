@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import type { Route } from "../+types/root";
 import {userContext} from "../context"
 
-export async function clientLoader({context, request}) {
+export async function clientLoader({context}) {
   const me = context.get(userContext)
   const isAdmin = me && me.is_admin
   const res = await fetch(`/api/job-boards`);

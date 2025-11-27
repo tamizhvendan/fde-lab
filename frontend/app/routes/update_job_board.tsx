@@ -7,7 +7,6 @@ import { userContext } from "~/context";
 
 export async function clientLoader({ params, context }: Route.ClientLoaderArgs) {
   const me = context.get(userContext)
-  debugger
   if (!me || !me.is_admin) {
     return redirect("/admin-login")
   }

@@ -2,6 +2,7 @@ import { layout, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
   route("/admin-login", "routes/admin_login_form.tsx"),
+  route("/admin-logout", "routes/admin_logout.tsx"),
   layout("layouts/default.tsx", [
     route("/", "routes/home.tsx"),
     route("job-boards", "routes/job_boards.tsx"),

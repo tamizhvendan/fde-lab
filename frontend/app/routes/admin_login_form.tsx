@@ -14,7 +14,6 @@ import {
 import { Input } from "~/components/ui/input"
 import { Form, redirect } from "react-router"
 import type { Route } from "../+types/root"
-import { userContext } from "~/context"
 
 export async function clientAction({ context, request}: Route.ClientActionArgs) {
   const formData = await request.formData()
@@ -22,8 +21,6 @@ export async function clientAction({ context, request}: Route.ClientActionArgs) 
     method: 'POST',
     body: formData,
   })
-  const me = await res.json()
-  context.set(userContext, me)
   return redirect("/job-boards")
 }
 
